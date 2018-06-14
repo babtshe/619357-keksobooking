@@ -36,23 +36,31 @@
   ];
   var mapBlock = document.querySelector('.map');
   var template = document.querySelector('template');
+  var adForm = document.querySelector('.ad-form');
+  var fieldAddress = document.querySelector('#address');
   var mapCardTemplate;
+  var mapPinTemplate;
   try {
     mapCardTemplate = template.content.querySelector('.map__card');
+    mapPinTemplate = template.content.querySelector('.map__pin');
   } catch (error) { //  fix for IE
     mapCardTemplate = template.querySelector('.map__card');
+    mapPinTemplate = template.querySelector('.map__pin');
     hideTemplate();
   }
   var mapPinsList = document.querySelector('.map__pins');
-  var mapPinTemplate = document.querySelector('.map__pin');
+  var mapPinMain = document.querySelector('.map__pin--main');
   var mapFiltersBlock = document.querySelector('.map__filters-container');
   var pinOffsetX = Math.round(mapPinTemplate.clientWidth / 2);
   var pinOffsetY = Math.round(mapPinTemplate.clientHeight + PIN_AFTER_OFFSET);
+  var fieldsets = adForm.querySelectorAll('.ad-form fieldset');
 
   generateOffers(MAX_OFFERS);
-  showMap();
-  renderPins(offers);
-  renderCard(offers[0]);
+  disableForm();
+
+  function onMapPinMainMouseup() {
+    activateForm();
+  }
 
   function generateOffers(counter) {
     var position = {};
@@ -70,6 +78,51 @@
     }
   }
 
+  function disableForm() {
+    mapPinMain.addEventListener('mouseup', onMapPinMainMouseup);
+    if (!mapBlock.classList.contains('map--faded')) {
+      mapBlock.classList.add('map--faded');
+    }
+    if (!adForm.classList.contains('ad-form--disabled')) {
+      adForm.classList.add('ad-form--disabled');
+    }
+    for (var i = 0; i < fieldsets.length; i++) {
+      fieldsets[i].disabled = true;
+    }
+  }
+
+  function activateForm() {
+    mapPinMain.removeEventListener('mouseup', onMapPinMainMouseup);
+    showMap();
+    setAddress();
+    adForm.classList.remove('ad-form--disabled');
+    for (var i = 0; i < fieldsets.length; i++) {
+      fieldsets[i].disabled = false;
+    }
+    renderPins(offers);
+    renderCard(offers[0]);
+    createCardListeners();
+  }
+
+  function createCardListeners() {
+    for (var i = 0; i < mapPinsList.children.length; i++) {
+      if (!mapPinsList.children[i].classList.contains('map__pin--main')) {
+        mapPinsList.children[i].addEventListener('click', function (evt) {
+          renderCard(offers[evt.currentTarget.getAttribute('data-key')]);
+        });
+      }
+    }
+  }
+
+  function setAddress() {
+    fieldAddress.value = getAddress();
+  }
+
+  function getAddress() {
+    return (parseInt(mapPinMain.style.left, 10) + pinOffsetX) + ', '
+    + (parseInt(mapPinMain.style.top, 10) + pinOffsetY);
+  }
+
   function showMap() {
     mapBlock.classList.remove('map--faded');
   }
@@ -78,18 +131,23 @@
     var fragment = document.createDocumentFragment();
 
     for (var i = 0; i < arr.length; i++) {
-      fragment.appendChild(createPin(arr[i]));
+      fragment.appendChild(createPin(arr[i], i));
     }
 
     mapPinsList.appendChild(fragment);
   }
 
   function renderCard(item) {
+    var currentCard = document.querySelector('.map__card.popup');
+    if (currentCard) {
+      currentCard.remove();
+    }
     mapFiltersBlock.insertAdjacentElement('beforeBegin', createCard(item));
   }
 
   function createCard(item) {
     var card = mapCardTemplate.cloneNode(true);
+    var cardClose = card.querySelector('.popup__close');
     var featuresList = card.querySelector('.popup__features');
     var photosList = card.querySelector('.popup__photos');
     card.querySelector('.popup__title').textContent = item.offer.title;
@@ -102,6 +160,9 @@
     card.querySelector('.popup__description').textContent = item.offer.description;
     createPhotos(photosList, item.offer.photos);
     card.querySelector('.popup__avatar').src = item.author.avatar;
+    cardClose.addEventListener('click', function () {
+      cardClose.parentNode.remove();
+    });
     return card;
   }
 
@@ -132,13 +193,14 @@
     });
   }
 
-  function createPin(item) {
+  function createPin(item, id) {
     var pinBlock = mapPinTemplate.cloneNode(true);
     var pinImg = pinBlock.querySelector('img');
     pinBlock.style.left = (item.location.x - pinOffsetX) + 'px';
     pinBlock.style.top = (item.location.y - pinOffsetY) + 'px';
     pinImg.src = item.author.avatar;
     pinImg.alt = item.offer.title;
+    pinBlock.setAttribute('data-key', id);
     return pinBlock;
   }
 
