@@ -106,7 +106,8 @@
 
   function createCardListeners() {
     for (var i = 0; i < mapPinsList.children.length; i++) {
-      if (!mapPinsList.children[i].classList.contains('map__pin--main')) {
+      if (!mapPinsList.children[i].classList.contains('map__pin--main')
+      && mapPinsList.children[i].classList.contains('map__pin')) {
         mapPinsList.children[i].addEventListener('click', function (evt) {
           renderCard(offers[evt.currentTarget.getAttribute('data-key')]);
         });
