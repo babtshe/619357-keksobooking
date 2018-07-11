@@ -53,7 +53,7 @@
   var mapFiltersBlock = document.querySelector('.map__filters-container');
   var pinOffsetX = Math.round(mapPinTemplate.clientWidth / 2);
   var pinOffsetY = Math.round(mapPinTemplate.clientHeight + PIN_AFTER_OFFSET);
-  var fieldsets = adForm.querySelectorAll('.ad-form fieldset');
+  var fieldsets = adForm.querySelectorAll('fieldset');
 
   generateOffers(MAX_OFFERS);
   disableForm();
@@ -95,6 +95,7 @@
     mapPinMain.removeEventListener('mouseup', onMapPinMainMouseup);
     showMap();
     setAddress();
+    validateForm();
     adForm.classList.remove('ad-form--disabled');
     for (var i = 0; i < fieldsets.length; i++) {
       fieldsets[i].disabled = false;
@@ -102,6 +103,17 @@
     renderPins(offers);
     renderCard(offers[0]);
     createCardListeners();
+  }
+
+  function validateForm() {
+    validatePrice();
+
+    function validatePrice() {
+      var typeField = adForm.querySelector('#type');
+      typeField.addEventListener('change', function () {
+        console.log('changed');
+      });
+    }
   }
 
   function createCardListeners() {
