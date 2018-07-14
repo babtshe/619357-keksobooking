@@ -7,8 +7,9 @@
   var MIN_PRICE = 1000;
   var MIN_ROOMS = 1;
   var MAX_ROOMS = 5;
-  var MIN_GUESTS = 1;
-  var MAX_GUESTS = 20;
+  var NO_GUESTS_ROOM = '100';
+  var MIN_GUESTS = 0;
+  var MAX_GUESTS = 5;
   var MIN_X = 300;
   var MAX_X = 900;
   var MIN_Y = 130;
@@ -25,7 +26,24 @@
     'Уютное бунгало далеко от моря',
     'Неуютное бунгало по колено в воде'
   ];
-  var offerTypes = ['palace', 'flat', 'house', 'bungalo'];
+  var offerTypes = {
+    palace: {
+      minPrice: '10000',
+      text: 'Дворец'
+    },
+    flat: {
+      minPrice: '1000',
+      text: 'Квартира'
+    },
+    house: {
+      minPrice: '5000',
+      text: 'Дом'
+    },
+    bungalo: {
+      minPrice: '0',
+      text: 'Бунгало'
+    }
+  };
   var checkinTimes = ['12:00', '13:00', '14:00'];
   var checkoutTimes = ['12:00', '13:00', '14:00'];
   var features = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
@@ -37,7 +55,15 @@
   var mapBlock = document.querySelector('.map');
   var template = document.querySelector('template');
   var adForm = document.querySelector('.ad-form');
-  var fieldAddress = document.querySelector('#address');
+  var addressField = adForm.querySelector('#address');
+  var typeField = adForm.querySelector('#type');
+  var priceField = adForm.querySelector('#price');
+  var isPriceChanged = false;
+  var timeInField = adForm.querySelector('#timein');
+  var timeOutField = adForm.querySelector('#timeout');
+  var roomsField = adForm.querySelector('#room_number');
+  var capacityField = adForm.querySelector('#capacity');
+  var invalidClass = 'invalid_value';
   var mapCardTemplate;
   var mapPinTemplate;
   try {
@@ -89,30 +115,97 @@
     for (var i = 0; i < fieldsets.length; i++) {
       fieldsets[i].disabled = true;
     }
+    removeFormListeners();
   }
 
   function activateForm() {
     mapPinMain.removeEventListener('mouseup', onMapPinMainMouseup);
     showMap();
     setAddress();
-    validateForm();
     adForm.classList.remove('ad-form--disabled');
     for (var i = 0; i < fieldsets.length; i++) {
       fieldsets[i].disabled = false;
     }
+    createFormListeners();
     renderPins(offers);
     renderCard(offers[0]);
     createCardListeners();
   }
 
-  function validateForm() {
-    validatePrice();
+  function createFormListeners() {
+    typeField.addEventListener('change', onTypeFieldChange);
+    priceField.addEventListener('change', onPriceFieldChange);
+    timeInField.addEventListener('change', onTimeInFieldChange);
+    timeOutField.addEventListener('change', onTimeOutFieldChange);
+    roomsField.addEventListener('change', onRoomsFieldChange);
+  }
 
-    function validatePrice() {
-      var typeField = adForm.querySelector('#type');
-      typeField.addEventListener('change', function () {
-        console.log('changed');
-      });
+  function removeFormListeners() {
+    typeField.removeEventListener('change', onTypeFieldChange);
+    priceField.removeEventListener('change', onPriceFieldChange);
+    timeInField.removeEventListener('change', onTimeInFieldChange);
+    timeOutField.removeEventListener('change', onTimeOutFieldChange);
+    roomsField.removeEventListener('change', onRoomsFieldChange);
+  }
+
+  function onTypeFieldChange() {
+    var currentType = typeField.value;
+    priceField.setAttribute('min', offerTypes[currentType].minPrice);
+    priceField.setAttribute('placeholder', offerTypes[currentType].minPrice);
+    if (!isPriceChanged) {
+      priceField.value = offerTypes[currentType].minPrice;
+    } else {
+      markFieldValidity(priceField);
+    }
+  }
+
+  function onPriceFieldChange() {
+    isPriceChanged = true;
+    markFieldValidity(priceField);
+  }
+
+  function onTimeInFieldChange() {
+    timeOutField.value = timeInField.value;
+  }
+
+  function onTimeOutFieldChange() {
+    timeInField.value = timeOutField.value;
+  }
+
+  function onRoomsFieldChange() {
+    modifyGuestOptions(roomsField.value);
+  }
+
+  function markFieldValidity(field) {
+    if (field.getAttribute('min') === '0' && field.value === '') {
+      field.value = '0';
+    }
+
+    if (!field.checkValidity() && !field.classList.contains(invalidClass)) {
+      field.classList.add(invalidClass);
+      field.reportValidity();
+    } else if (field.checkValidity() && field.classList.contains(invalidClass)) {
+      field.classList.remove(invalidClass);
+    }
+  }
+
+  function modifyGuestOptions(rooms) {
+    if (rooms === NO_GUESTS_ROOM) {
+      rooms = 0;
+    }
+
+    for (var i = 0; i < capacityField.length; i++) {
+      if (capacityField.options[i].value <= rooms && capacityField.options[i].value > 0) {
+        capacityField.options[i].disabled = false;
+      } else if (rooms === 0 && capacityField.options[i].value === '0') {
+        capacityField.options[i].disabled = false;
+        capacityField.options[i].selected = true;
+      } else {
+        capacityField.options[i].disabled = true;
+        if (capacityField.options[i].value === capacityField.value) {
+          capacityField.options[i].selected = false;
+        }
+      }
     }
   }
 
@@ -128,7 +221,7 @@
   }
 
   function setAddress() {
-    fieldAddress.value = getAddress();
+    addressField.value = getAddress();
   }
 
   function getAddress() {
@@ -189,7 +282,7 @@
         title: offerTitles[index],
         address: position.x + ', ' + position.y,
         price: getRandomInt(MIN_PRICE, MAX_PRICE),
-        type: getRandomValue(offerTypes),
+        type: getRandomKey(offerTypes),
         rooms: getRandomInt(MIN_ROOMS, MAX_ROOMS),
         guests: getRandomInt(MIN_GUESTS, MAX_GUESTS),
         checkin: getRandomValue(checkinTimes),
@@ -243,40 +336,31 @@
     var result = '';
     switch (rooms) {
       default:
-        result = rooms + ' комнаты для ';
+        result = rooms + ' комнаты ';
         break;
       case 1:
-        result = rooms + ' комната для ';
+        result = rooms + ' комната ';
         break;
       case 5:
-        result = rooms + ' комнат для ';
+        result = rooms + ' комнат ';
         break;
     }
 
     switch (guests) {
       default:
-        result += guests + ' гостей.';
+        result += 'для ' + guests + ' гостей.';
         break;
       case 1:
-        result += guests + ' гостя.';
+        result += 'для ' + guests + ' гостя.';
         break;
+      case 0:
+        result += 'не для гостей.';
     }
     return result;
   }
 
-  function getOfferTypeText(offerType) {
-    switch (offerType) {
-      default:
-        return offerType;
-      case 'palace':
-        return 'Дворец';
-      case 'flat':
-        return 'Квартира';
-      case 'house':
-        return 'Дом';
-      case 'bungalo':
-        return 'Бунгало';
-    }
+  function getOfferTypeText(type) {
+    return offerTypes[type].text;
   }
 
   function getRandomInt(min, max) {
@@ -287,6 +371,11 @@
 
   function getRandomValue(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function getRandomKey(obj) {
+    var keys = Object.keys(obj);
+    return keys[keys.length * Math.random() << 0];
   }
 
   function getRandomArray(arr) {
