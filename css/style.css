@@ -615,7 +615,7 @@ fieldset {
   font-size: 18px;
 
   height: 42px;
-  padding-left: 14px;
+  padding-left: 5px;
 
   background-color: white;
   border: 1px solid #d9d9d3;
@@ -1215,4 +1215,12 @@ fieldset {
   -webkit-transform: translateX(-50%);
       -ms-transform: translateX(-50%);
           transform: translateX(-50%);
+}
+
+.ad-form__element .invalid_value {
+  border: 2px solid #ff0000;
+}
+
+.ad-form__element option:disabled {
+  display: none;
 }
