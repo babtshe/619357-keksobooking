@@ -55,6 +55,7 @@
   var mapBlock = document.querySelector('.map');
   var template = document.querySelector('template');
   var adForm = document.querySelector('.ad-form');
+  var isFormActive = false;
   var addressField = adForm.querySelector('#address');
   var typeField = adForm.querySelector('#type');
   var priceField = adForm.querySelector('#price');
@@ -79,13 +80,58 @@
   var mapFiltersBlock = document.querySelector('.map__filters-container');
   var pinOffsetX = Math.round(mapPinTemplate.clientWidth / 2);
   var pinOffsetY = Math.round(mapPinTemplate.clientHeight + PIN_AFTER_OFFSET);
+  var pinMainOffset = {
+    x: Math.floor(mapPinMain.offsetWidth / 2),
+    y: mapPinMain.offsetHeight + pinOffsetY
+  };
   var fieldsets = adForm.querySelectorAll('fieldset');
 
   generateOffers(MAX_OFFERS);
   disableForm();
+  mapPinMain.addEventListener('mousedown', onMapPinMainMouseDown);
 
-  function onMapPinMainMouseup() {
-    activateForm();
+  function onMapPinMainMouseDown(evt) {
+    evt.preventDefault();
+    if (!evt.button) {
+      var startMousePosition = {
+        x: evt.clientX,
+        y: evt.clientY
+      };
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    }
+
+    function onMouseMove(evtMove) {
+      evtMove.preventDefault();
+      var distance = {
+        x: startMousePosition.x - evtMove.clientX,
+        y: startMousePosition.y - evtMove.clientY
+      };
+
+      startMousePosition.x = evtMove.clientX;
+      startMousePosition.y = evtMove.clientY;
+      mapPinMain.style.left =
+        Math.min(Math.max(-pinMainOffset.x, (mapPinMain.offsetLeft - distance.x)),
+            (mapBlock.offsetWidth - pinMainOffset.x)) + 'px';
+      mapPinMain.style.top =
+        Math.min(Math.max(MIN_Y, (mapPinMain.offsetTop - distance.y)), MAX_Y) + 'px';
+      setAddress();
+    }
+
+    function onMouseUp(evtUp) {
+      evtUp.preventDefault();
+      if (!evt.button) {
+        if (!isFormActive) {
+          activateForm();
+        } else {
+          setAddress();
+        }
+
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+    }
   }
 
   function generateOffers(counter) {
@@ -105,7 +151,7 @@
   }
 
   function disableForm() {
-    mapPinMain.addEventListener('mouseup', onMapPinMainMouseup);
+    isFormActive = false;
     if (!mapBlock.classList.contains('map--faded')) {
       mapBlock.classList.add('map--faded');
     }
@@ -119,7 +165,7 @@
   }
 
   function activateForm() {
-    mapPinMain.removeEventListener('mouseup', onMapPinMainMouseup);
+    isFormActive = true;
     showMap();
     setAddress();
     adForm.classList.remove('ad-form--disabled');
@@ -225,8 +271,8 @@
   }
 
   function getAddress() {
-    return (parseInt(mapPinMain.style.left, 10) + pinOffsetX) + ', '
-    + (parseInt(mapPinMain.style.top, 10) + pinOffsetY);
+    return (mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2)) + ', '
+    + (mapPinMain.offsetTop + pinOffsetY);
   }
 
   function showMap() {
