@@ -115,7 +115,7 @@
         Math.min(Math.max(-pinMainOffset.x, (mapPinMain.offsetLeft - distance.x)),
             (mapBlock.offsetWidth - pinMainOffset.x)) + 'px';
       mapPinMain.style.top =
-        Math.min(Math.max(MIN_Y, (mapPinMain.offsetTop - distance.y)), MAX_Y) + 'px';
+        Math.min(Math.max((MIN_Y - pinMainOffset.y), (mapPinMain.offsetTop - distance.y)), (MAX_Y - pinMainOffset.y)) + 'px';
       setAddress();
     }
 
@@ -272,7 +272,7 @@
 
   function getAddress() {
     return (mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2)) + ', '
-    + (mapPinMain.offsetTop + pinOffsetY);
+    + (mapPinMain.offsetTop + pinMainOffset.y);
   }
 
   function showMap() {
