@@ -80,6 +80,10 @@
   var mapFiltersBlock = document.querySelector('.map__filters-container');
   var pinOffsetX = Math.round(mapPinTemplate.clientWidth / 2);
   var pinOffsetY = Math.round(mapPinTemplate.clientHeight + PIN_AFTER_OFFSET);
+  var pinMainOffset = {
+    x: Math.floor(mapPinMain.offsetWidth / 2),
+    y: mapPinMain.offsetHeight + pinOffsetY
+  };
   var fieldsets = adForm.querySelectorAll('fieldset');
 
   generateOffers(MAX_OFFERS);
@@ -108,8 +112,8 @@
       startMousePosition.x = evtMove.clientX;
       startMousePosition.y = evtMove.clientY;
       mapPinMain.style.left =
-        Math.min(Math.max(0, (mapPinMain.offsetLeft - distance.x)),
-            (mapBlock.offsetWidth - mapPinMain.clientWidth)) + 'px';
+        Math.min(Math.max(-pinMainOffset.x, (mapPinMain.offsetLeft - distance.x)),
+            (mapBlock.offsetWidth - pinMainOffset.x)) + 'px';
       mapPinMain.style.top =
         Math.min(Math.max(MIN_Y, (mapPinMain.offsetTop - distance.y)), MAX_Y) + 'px';
       setAddress();
@@ -267,7 +271,7 @@
   }
 
   function getAddress() {
-    return (mapPinMain.offsetLeft + pinOffsetX) + ', '
+    return (mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2)) + ', '
     + (mapPinMain.offsetTop + pinOffsetY);
   }
 
