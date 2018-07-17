@@ -37,20 +37,22 @@
     var fragment = document.createDocumentFragment();
 
     for (var i = 0; i < arr.length; i++) {
-      fragment.appendChild(createPin(arr[i], i));
+      fragment.appendChild(createPin(arr[i]));
     }
 
     window.pin.mapPinsList.appendChild(fragment);
   }
 
-  function createPin(item, id) {
+  function createPin(item) {
     var pinBlock = mapPinTemplate.cloneNode(true);
     var pinImg = pinBlock.querySelector('img');
     pinBlock.style.left = (item.location.x - pinOffsetX) + 'px';
     pinBlock.style.top = (item.location.y - pinOffsetY) + 'px';
     pinImg.src = item.author.avatar;
     pinImg.alt = item.offer.title;
-    pinBlock.setAttribute('data-key', id);
+    pinBlock.addEventListener('click', function () {
+      window.card.render(item);
+    });
     return pinBlock;
   }
 
