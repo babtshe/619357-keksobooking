@@ -19,18 +19,19 @@
   } catch (error) {
     mapPinTemplate = window.data.template.querySelector('.map__pin');
   }
-  var PIN_AFTER_OFFSET = 22;
-  var pinOffsetX = Math.round(mapPinTemplate.clientWidth / 2);
-  var pinOffsetY = Math.round(mapPinTemplate.clientHeight + PIN_AFTER_OFFSET);
+  var pinOffsetX = Math.round(getPinSize().width / 2);
+  var pinOffsetY = Math.round(getPinSize().height);
+  var PIN_AFTER_OFFSET = 16;
   var mapPinMain = document.querySelector('.map__pin--main');
   var pinMainOffset = {
     x: Math.floor(mapPinMain.offsetWidth / 2),
-    y: mapPinMain.offsetHeight + pinOffsetY
+    y: mapPinMain.offsetHeight + PIN_AFTER_OFFSET
   };
   var MIN_Y = 130;
   var MAX_Y = 630;
 
   mapPinMain.addEventListener('mousedown', onMapPinMainMouseDown);
+  getPinSize();
 
   function renderPins(arr) {
     var fragment = document.createDocumentFragment();
@@ -96,6 +97,19 @@
         document.removeEventListener('mouseup', onMouseUp);
       }
     }
+  }
+
+  function getPinSize() {
+    var pin = mapPinTemplate.cloneNode(true);
+    pin.style.visibility = 'hidden';
+    window.pin.mapPinsList.appendChild(pin);
+    var size = {
+      width: pin.offsetWidth,
+      height: pin.offsetHeight
+    };
+    window.pin.mapPinsList.removeChild(pin);
+
+    return size;
   }
 
 })();
