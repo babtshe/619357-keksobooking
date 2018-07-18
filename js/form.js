@@ -54,6 +54,7 @@
   }
 
   function createFormListeners() {
+    adForm.addEventListener('submit', onFormSubmit);
     typeField.addEventListener('change', onTypeFieldChange);
     priceField.addEventListener('change', onPriceFieldChange);
     timeInField.addEventListener('change', onTimeInFieldChange);
@@ -62,6 +63,7 @@
   }
 
   function removeFormListeners() {
+    adForm.removeEventListener('submit', onFormSubmit);
     typeField.removeEventListener('change', onTypeFieldChange);
     priceField.removeEventListener('change', onPriceFieldChange);
     timeInField.removeEventListener('change', onTimeInFieldChange);
@@ -95,6 +97,15 @@
 
   function onRoomsFieldChange() {
     modifyGuestOptions(roomsField.value);
+  }
+
+  function onFormSubmit(evt) {
+    window.backend.save(new FormData(adForm), function () {
+      window.modal.success();
+      adForm.reset();
+      window.form.setAddress(window.pin.getAddress());
+    }, window.modal.error);
+    evt.preventDefault();
   }
 
   function markFieldValidity(field) {

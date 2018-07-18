@@ -2,7 +2,15 @@
 (function () {
   window.library = {
     hideBlock: function (block) {
-      block.style.display = 'none';
+      if (!block.classList.contains('hidden')) {
+        block.classList.add('hidden');
+      }
+    },
+
+    showBlock: function (block) {
+      if (block.classList.contains('hidden')) {
+        block.classList.remove('hidden');
+      }
     },
 
     checkClassInArray: function (classList, arr, prefix) {
