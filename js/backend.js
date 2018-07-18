@@ -11,6 +11,7 @@
   };
 
   var STATUS_OK = 200;
+  var responseData;
 
   function loadData(onLoad, onError) {
     var URL = 'https://js.dump.academy/keksobooking/data';
@@ -18,7 +19,11 @@
 
     xhr.addEventListener('load', function () {
       if (xhr.status === STATUS_OK) {
-        onLoad(xhr.response);
+        responseData = xhr.response;
+        if (typeof responseData === 'string') {
+          responseData = JSON.parse(responseData);
+        }
+        onLoad(responseData);
       } else {
         onError(xhr.status + ': ' + xhr.statusText);
       }
@@ -29,12 +34,12 @@
     });
 
     xhr.addEventListener('timeout', function () {
-      onError('Ответ сервера не получен за ' + (xhr.timeout / 1000) + 'сек.');
+      onError('Ответ сервера не получен за ' + (xhr.timeout / 1000) + ' сек.');
     });
 
     xhr.open('GET', URL);
     xhr.responseType = 'json';
-    xhr.timeout = 2000;
+    xhr.timeout = 5000;
     xhr.send();
   }
 
@@ -44,7 +49,11 @@
 
     xhr.addEventListener('load', function () {
       if (xhr.status === STATUS_OK) {
-        onLoad(xhr.response);
+        responseData = xhr.response;
+        if (typeof responseData === 'string') {
+          responseData = JSON.parse(responseData);
+        }
+        onLoad(responseData);
       } else {
         onError(xhr.status + ': ' + xhr.statusText);
       }
@@ -55,12 +64,12 @@
     });
 
     xhr.addEventListener('timeout', function () {
-      onError('Ответ сервера не получен за ' + (xhr.timeout / 1000) + 'секунд.');
+      onError('Ответ сервера не получен за ' + (xhr.timeout / 1000) + ' сек.');
     });
 
     xhr.open('POST', URL);
     xhr.responseType = 'json';
-    xhr.timeout = 2000;
+    xhr.timeout = 5000;
     xhr.send(data);
   }
 })();

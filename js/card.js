@@ -73,6 +73,9 @@
       default:
         result = rooms + ' комнаты ';
         break;
+      case 0:
+        result = 'Комнаты ';
+        break;
       case 1:
         result = rooms + ' комната ';
         break;
