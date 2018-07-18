@@ -15,7 +15,6 @@
   function loadData(onLoad, onError) {
     var URL = 'https://js.dump.academy/keksobooking/data';
     var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
       if (xhr.status === STATUS_OK) {
@@ -33,15 +32,15 @@
       onError('Ответ сервера не получен за ' + (xhr.timeout / 1000) + 'сек.');
     });
 
-    xhr.timeout = 2000;
     xhr.open('GET', URL);
+    xhr.responseType = 'json';
+    xhr.timeout = 2000;
     xhr.send();
   }
 
   function saveData(data, onLoad, onError) {
     var URL = 'https://js.dump.academy/keksobooking';
     var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
       if (xhr.status === STATUS_OK) {
@@ -59,8 +58,9 @@
       onError('Ответ сервера не получен за ' + (xhr.timeout / 1000) + 'секунд.');
     });
 
-    xhr.timeout = 2000;
     xhr.open('POST', URL);
+    xhr.responseType = 'json';
+    xhr.timeout = 2000;
     xhr.send(data);
   }
 })();
