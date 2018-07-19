@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
   window.upload = {
@@ -12,6 +13,7 @@
   var photosUpload = document.querySelector('#images');
   var photosPreview = document.querySelector('.ad-form__photo');
   var photosDropzone = document.querySelector('.ad-form__drop-zone');
+  var dragErrorMessage = 'Перетаскивание не работает в этом браузере, кликните по полю загрузки.';
 
   function createUploadListeners() {
     avatarUpload.addEventListener('change', onFileUpload);
@@ -57,19 +59,27 @@
     evt.stopPropagation();
     evt.preventDefault();
     evt.target.classList.remove('dragged-over');
-    avatarUpload.files = evt.dataTransfer.files;
+    try {
+      avatarUpload.files = evt.dataTransfer.files;
+    } catch (err) {
+      window.modal.error(dragErrorMessage);
+    }
   }
 
   function onPhotosDrop(evt) {
     evt.stopPropagation();
     evt.preventDefault();
-    evt.target.style = '';
-    photosUpload.files = evt.dataTransfer.files;
+    evt.target.classList.remove('dragged-over');
+    try {
+      photosUpload.files = evt.dataTransfer.files;
+    } catch (err) {
+      window.modal.error(dragErrorMessage);
+    }
   }
 
   function checkFile(file) {
     if (FILE_TYPES.some(function (elem) {
-      return file.endsWith(elem);
+      return file.substring(file.length - elem.length, file.length) === elem;
     })) {
       return true;
     }

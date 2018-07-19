@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   window.data = {
     ESC_KEYCODE: 27,

@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   var STATUS_OK = 200;
   window.backend = {

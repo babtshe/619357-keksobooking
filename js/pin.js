@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   var PIN_AFTER_OFFSET = 16;
   var MAX_PINS = 5;
@@ -18,9 +19,18 @@
       pinsArray = arr;
     },
 
-    updatePins: window.library.debounce(function () {
+    update: window.library.debounce(function () {
       renderPins(filterPins(pinsArray));
     }),
+
+    deactivate: function () {
+      var currentPins = document.querySelectorAll('.map__pins .map__pin:not(.map__pin--main)');
+      if (currentPins) {
+        [].forEach.call(currentPins, function (elem) {
+          elem.classList.remove('map__pin--active');
+        });
+      }
+    },
 
     mapPinsList: document.querySelector('.map__pins')
   };
@@ -75,6 +85,8 @@
     pinImg.alt = item.offer.title;
     pinBlock.addEventListener('click', function () {
       window.card.render(item);
+      window.pin.deactivate();
+      pinBlock.classList.add('map__pin--active');
     });
     return pinBlock;
   }
@@ -125,7 +137,8 @@
   }
 
   function onFilterFormChange() {
-    window.pin.updatePins();
+    window.card.clear();
+    window.pin.update();
   }
 
   function filterPins(arr) {
@@ -189,5 +202,4 @@
 
     return size;
   }
-
 })();

@@ -1,5 +1,6 @@
 'use strict';
-(function () { // TODO: remove unused functions
+
+(function () {
   var DEBOUNCE_DEFAULT = 500;
   window.library = {
     hideBlock: function (block) {
@@ -25,40 +26,6 @@
         }
       }
       return result;
-    },
-
-    getRandomKey: function (obj) {
-      var keys = Object.keys(obj);
-      return keys[keys.length * Math.floor(Math.random())];
-    },
-
-    getRandomValue: function (arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    },
-
-    getRandomInt: function (min, max) {
-      min = Math.ceil(min);
-      max = Math.floor(max);
-      return Math.round(Math.random() * (max - min)) + min;
-    },
-
-    shuffleArray: function (array) { // Fisher–Yates shuffle
-      var m = array.length;
-      var t;
-      var i;
-
-      while (m) {
-        i = Math.floor(Math.random() * m--);
-        t = array[m];
-        array[m] = array[i];
-        array[i] = t;
-      }
-    },
-
-    getRandomArray: function (arr) {
-      window.library.shuffleArray(arr);
-      var counter = Math.floor(Math.random() * arr.length);
-      return arr.slice(counter, arr.length);
     },
 
     debounce: function (func, delay) {

@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   var NO_GUESTS_ROOM = '100';
   window.form = {
@@ -108,9 +109,10 @@
 
   function onFormSubmit(evt) {
     window.backend.save(new FormData(adForm), function () {
-      window.modal.success();
+      window.card.clear();
       adForm.reset();
       window.form.setAddress(window.pin.getAddress());
+      window.modal.success();
     }, window.modal.error);
     evt.preventDefault();
   }
@@ -147,5 +149,4 @@
       }
     }
   }
-
 })();

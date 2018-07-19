@@ -1,13 +1,19 @@
 'use strict';
+
 (function () {
   var FEATURE_PREFIX = 'popup__feature--';
   window.card = {
     render: function (item) {
       renderCard(item);
+    },
+
+    clear: function () {
+      clearCard();
     }
   };
 
   var mapFiltersBlock = document.querySelector('.map__filters-container');
+  var currentCard;
   var mapCardTemplate;
   try {
     mapCardTemplate = window.data.template.content.querySelector('.map__card');
@@ -17,11 +23,17 @@
   }
 
   function renderCard(item) {
-    var currentCard = document.querySelector('.map__card.popup');
+    clearCard();
+    mapFiltersBlock.insertAdjacentElement('beforeBegin', createCard(item));
+  }
+
+  function clearCard() {
+    currentCard = document.querySelector('.map__card.popup');
     if (currentCard) {
       currentCard.remove();
     }
-    mapFiltersBlock.insertAdjacentElement('beforeBegin', createCard(item));
+    window.pin.deactivate();
+    document.removeEventListener('keydown', onDocumentEscPress);
   }
 
   function createCard(item) {
@@ -41,13 +53,17 @@
     card.querySelector('.popup__avatar').src = item.author.avatar;
     cardClose.addEventListener('click', function () {
       cardClose.parentNode.remove();
+      window.pin.deactivate();
+      document.removeEventListener('keydown', onDocumentEscPress);
     });
-    document.addEventListener('keydown', function (evt) {
-      if (evt.keyCode === window.data.ESC_KEYCODE) {
-        cardClose.parentNode.remove();
-      }
-    }, {once: true});
+    document.addEventListener('keydown', onDocumentEscPress);
     return card;
+  }
+
+  function onDocumentEscPress(evt) {
+    if (evt.keyCode === window.data.ESC_KEYCODE) {
+      clearCard();
+    }
   }
 
   function createFeatures(listBlock, featuresArray) {
