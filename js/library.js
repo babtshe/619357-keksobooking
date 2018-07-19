@@ -1,5 +1,5 @@
 'use strict';
-(function () {
+(function () { // TODO: remove unused functions
   var DEBOUNCE_DEFAULT = 500;
   window.library = {
     hideBlock: function (block) {

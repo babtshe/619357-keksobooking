@@ -57,6 +57,7 @@
       buttons[j].disabled = false;
     }
     createFormListeners();
+    window.upload.enable();
   }
 
   function createFormListeners() {
