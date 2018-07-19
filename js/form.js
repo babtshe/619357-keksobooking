@@ -1,5 +1,6 @@
 'use strict';
 (function () {
+  var NO_GUESTS_ROOM = '100';
   window.form = {
     activate: function () {
       activateForm();
@@ -17,11 +18,11 @@
       addressField.value = address;
     }
   };
-
   var isFormActive = false;
   var adForm = document.querySelector('.ad-form');
   var addressField = adForm.querySelector('#address');
   var fieldsets = adForm.querySelectorAll('fieldset');
+  var buttons = adForm.querySelectorAll('button');
   var typeField = adForm.querySelector('#type');
   var priceField = adForm.querySelector('#price');
   var isPriceChanged = false;
@@ -29,7 +30,6 @@
   var timeOutField = adForm.querySelector('#timeout');
   var roomsField = adForm.querySelector('#room_number');
   var capacityField = adForm.querySelector('#capacity');
-  var NO_GUESTS_ROOM = '100';
   var invalidClass = 'invalid_value';
 
 
@@ -41,6 +41,9 @@
     for (var i = 0; i < fieldsets.length; i++) {
       fieldsets[i].disabled = true;
     }
+    for (var j = 0; j < buttons.length; j++) {
+      buttons[j].disabled = true;
+    }
     removeFormListeners();
   }
 
@@ -49,6 +52,9 @@
     adForm.classList.remove('ad-form--disabled');
     for (var i = 0; i < fieldsets.length; i++) {
       fieldsets[i].disabled = false;
+    }
+    for (var j = 0; j < buttons.length; j++) {
+      buttons[j].disabled = false;
     }
     createFormListeners();
   }

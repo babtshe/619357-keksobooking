@@ -1,5 +1,6 @@
 'use strict';
 (function () {
+  var FEATURE_PREFIX = 'popup__feature--';
   window.card = {
     render: function (item) {
       renderCard(item);
@@ -7,7 +8,6 @@
   };
 
   var mapFiltersBlock = document.querySelector('.map__filters-container');
-  var FEATURE_PREFIX = 'popup__feature--';
   var mapCardTemplate;
   try {
     mapCardTemplate = window.data.template.content.querySelector('.map__card');
@@ -42,6 +42,11 @@
     cardClose.addEventListener('click', function () {
       cardClose.parentNode.remove();
     });
+    document.addEventListener('keydown', function (evt) {
+      if (evt.keyCode === window.data.ESC_KEYCODE) {
+        cardClose.parentNode.remove();
+      }
+    }, {once: true});
     return card;
   }
 
@@ -72,6 +77,9 @@
     switch (rooms) {
       default:
         result = rooms + ' комнаты ';
+        break;
+      case 0:
+        result = 'Комнаты ';
         break;
       case 1:
         result = rooms + ' комната ';

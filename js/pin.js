@@ -1,5 +1,12 @@
 'use strict';
 (function () {
+  var PIN_AFTER_OFFSET = 16;
+  var MAX_PINS = 5;
+  var MIN_Y = 130;
+  var MAX_Y = 630;
+  var FILTER_LOW = 10000;
+  var FILTER_HIGH = 50000;
+
   window.pin = {
     getAddress: function () {
       return (mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2)) + ', '
@@ -8,11 +15,17 @@
 
     render: function (arr) {
       renderPins(arr);
+      pinsArray = arr;
     },
+
+    updatePins: window.library.debounce(function () {
+      renderPins(filterPins(pinsArray));
+    }),
 
     mapPinsList: document.querySelector('.map__pins')
   };
-
+  var pinsArray = [];
+  var filterForm = document.querySelector('.map__filters');
   var mapPinTemplate;
   try {
     mapPinTemplate = window.data.template.content.querySelector('.map__pin');
@@ -21,22 +34,32 @@
   }
   var pinOffsetX = Math.round(getPinSize().width / 2);
   var pinOffsetY = Math.round(getPinSize().height);
-  var PIN_AFTER_OFFSET = 16;
   var mapPinMain = document.querySelector('.map__pin--main');
   var pinMainOffset = {
     x: Math.floor(mapPinMain.offsetWidth / 2),
     y: mapPinMain.offsetHeight + PIN_AFTER_OFFSET
   };
-  var MIN_Y = 130;
-  var MAX_Y = 630;
+  var filterType = filterForm.querySelector('#housing-type');
+  var filterPrice = filterForm.querySelector('#housing-price');
+  var filterRooms = filterForm.querySelector('#housing-rooms');
+  var filterGuests = filterForm.querySelector('#housing-guests');
+  var filterCheckboxes = filterForm.querySelectorAll('input[type="checkbox"]');
 
   mapPinMain.addEventListener('mousedown', onMapPinMainMouseDown);
   getPinSize();
+  filterForm.addEventListener('change', onFilterFormChange);
 
   function renderPins(arr) {
+    var currentPins = document.querySelectorAll('.map__pins .map__pin:not(.map__pin--main)');
+    if (currentPins) {
+      [].forEach.call(currentPins, function (elem) {
+        elem.remove();
+      });
+    }
     var fragment = document.createDocumentFragment();
+    var count = (arr.length > MAX_PINS) ? MAX_PINS : arr.length;
 
-    for (var i = 0; i < arr.length; i++) {
+    for (var i = 0; i < count; i++) {
       fragment.appendChild(createPin(arr[i]));
     }
 
@@ -99,6 +122,59 @@
         document.removeEventListener('mouseup', onMouseUp);
       }
     }
+  }
+
+  function onFilterFormChange() {
+    window.pin.updatePins();
+  }
+
+  function filterPins(arr) {
+    return arr.slice().filter(function (elem) {
+      return checkPinFiltered(elem);
+    });
+  }
+
+  function checkPinFiltered(pin) {
+    if (filterType.value !== 'any' && filterType.value !== pin.offer.type) {
+      return false;
+    }
+    if (filterPrice.value !== 'any') {
+      switch (filterPrice.value) {
+        case 'low':
+          if (!window.library.checkInRange(parseInt(pin.offer.price, 10), null, FILTER_LOW)) {
+            return false;
+          }
+          break;
+        case 'middle':
+          if (!window.library.checkInRange(parseInt(pin.offer.price, 10), FILTER_LOW, FILTER_HIGH)) {
+            return false;
+          }
+          break;
+        case 'high':
+          if (!window.library.checkInRange(parseInt(pin.offer.price, 10), FILTER_HIGH)) {
+            return false;
+          }
+          break;
+      }
+    }
+    if (filterRooms.value !== 'any') {
+      if (parseInt(filterRooms.value, 10) !== parseInt(pin.offer.rooms, 10)) {
+        return false;
+      }
+    }
+    if (filterGuests.value !== 'any') {
+      if (parseInt(filterGuests.value, 10) !== parseInt(pin.offer.guests, 10)) {
+        return false;
+      }
+    }
+    for (var i = 0; i < filterCheckboxes.length; i++) {
+      if (filterCheckboxes[i].checked &&
+        (pin.offer.features.indexOf(filterCheckboxes[i].value) < 0) &&
+        true) {
+        return false;
+      }
+    }
+    return true;
   }
 
   function getPinSize() {

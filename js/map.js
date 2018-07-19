@@ -1,5 +1,4 @@
 'use strict';
-
 (function () {
   window.map = {
     render: function () {
