@@ -1,5 +1,6 @@
 'use strict';
 (function () {
+  var NO_GUESTS_ROOM = '100';
   window.form = {
     activate: function () {
       activateForm();
@@ -17,7 +18,6 @@
       addressField.value = address;
     }
   };
-
   var isFormActive = false;
   var adForm = document.querySelector('.ad-form');
   var addressField = adForm.querySelector('#address');
@@ -30,7 +30,6 @@
   var timeOutField = adForm.querySelector('#timeout');
   var roomsField = adForm.querySelector('#room_number');
   var capacityField = adForm.querySelector('#capacity');
-  var NO_GUESTS_ROOM = '100';
   var invalidClass = 'invalid_value';
 
 

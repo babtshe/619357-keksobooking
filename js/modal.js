@@ -9,9 +9,6 @@
       showSuccess();
     }
   };
-
-  var ESC_KEYCODE = 27;
-  var ENTER_KEYCODE = 13;
   var popup = document.querySelector('.popup-message');
   var successBlock = document.querySelector('.success');
   var errorText = popup.querySelector('.popup-message__text');
@@ -63,7 +60,7 @@
   }
 
   function onPopupEscPress(evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
+    if (evt.keyCode === window.data.ESC_KEYCODE) {
       hidePopup();
     }
   }
@@ -73,13 +70,13 @@
   }
 
   function onPopupCloseEnterPress(evt) {
-    if (evt.keyCode === ENTER_KEYCODE) {
+    if (evt.keyCode === window.data.ENTER_KEYCODE) {
       hidePopup();
     }
   }
 
   function onSuccessEscPress(evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
+    if (evt.keyCode === window.data.ESC_KEYCODE) {
       hideSuccess();
     }
   }

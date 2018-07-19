@@ -1,5 +1,6 @@
 'use strict';
 (function () {
+  var STATUS_OK = 200;
   window.backend = {
     load: function (onLoad, onError) {
       loadData(onLoad, onError);
@@ -9,8 +10,6 @@
       saveData(data, onLoad, onError);
     }
   };
-
-  var STATUS_OK = 200;
   var responseData;
 
   function loadData(onLoad, onError) {
