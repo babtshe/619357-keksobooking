@@ -128,10 +128,6 @@
     window.pin.updatePins();
   }
 
-  // window.pin.updatePins = window.library.debounce(function () {
-  //   renderPins(filterPins(pinsArray));
-  // });
-
   function filterPins(arr) {
     return arr.slice().filter(function (elem) {
       return checkPinFiltered(elem);
