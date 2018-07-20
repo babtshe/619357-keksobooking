@@ -73,6 +73,7 @@
   var filterCheckboxes = filterForm.querySelectorAll('input[type="checkbox"]');
 
   mapPinMain.addEventListener('mousedown', onMapPinMainMouseDown);
+  mapPinMain.addEventListener('keydown', onMainPinKeyDown);
   getPinSize();
   filterForm.addEventListener('change', onFilterFormChange);
 
@@ -141,16 +142,27 @@
     function onMouseUp(evtUp) {
       evtUp.preventDefault();
       if (!evt.button) {
-        if (!window.form.isActive()) {
-          window.form.activate();
-          window.map.render();
-        }
-
-        window.form.setAddress(window.pin.getAddress());
+        initializeAll();
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
       }
     }
+  }
+
+  function onMainPinKeyDown(evt) {
+    if (evt.keyCode === window.data.ENTER_KEYCODE) {
+      initializeAll();
+      mapPinMain.removeEventListener('keydown', onMainPinKeyDown);
+    }
+  }
+
+  function initializeAll() {
+    if (!window.form.isActive()) {
+      window.form.activate();
+      window.map.render();
+    }
+
+    window.form.setAddress(window.pin.getAddress());
   }
 
   function onFilterFormChange() {
