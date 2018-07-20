@@ -2,16 +2,6 @@
 
 (function () {
   var FEATURE_PREFIX = 'popup__feature--';
-  window.card = {
-    render: function (item) {
-      renderCard(item);
-    },
-
-    clear: function () {
-      clearCard();
-    }
-  };
-
   var mapFiltersBlock = document.querySelector('.map__filters-container');
   var currentCard;
   var mapCardTemplate;
@@ -21,6 +11,15 @@
     mapCardTemplate = window.data.template.querySelector('.map__card');
     window.library.hideBlock(window.data.template);
   }
+  window.card = {
+    render: function (item) {
+      renderCard(item);
+    },
+
+    clear: function () {
+      clearCard();
+    }
+  };
 
   function renderCard(item) {
     clearCard();

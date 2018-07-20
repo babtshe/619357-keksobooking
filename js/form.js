@@ -2,6 +2,20 @@
 
 (function () {
   var NO_GUESTS_ROOM = '100';
+  var isFormActive = false;
+  var adForm = document.querySelector('.ad-form');
+  var addressField = adForm.querySelector('#address');
+  var fieldsets = adForm.querySelectorAll('fieldset');
+  var buttons = adForm.querySelectorAll('button');
+  var typeField = adForm.querySelector('#type');
+  var priceField = adForm.querySelector('#price');
+  var isPriceChanged = false;
+  var timeInField = adForm.querySelector('#timein');
+  var timeOutField = adForm.querySelector('#timeout');
+  var roomsField = adForm.querySelector('#room_number');
+  var capacityField = adForm.querySelector('#capacity');
+  var resetButton = adForm.querySelector('.ad-form__reset');
+  var invalidClass = 'invalid_value';
   window.form = {
     activate: function () {
       activateForm();
@@ -19,21 +33,6 @@
       addressField.value = address;
     }
   };
-  var isFormActive = false;
-  var adForm = document.querySelector('.ad-form');
-  var addressField = adForm.querySelector('#address');
-  var fieldsets = adForm.querySelectorAll('fieldset');
-  var buttons = adForm.querySelectorAll('button');
-  var typeField = adForm.querySelector('#type');
-  var priceField = adForm.querySelector('#price');
-  var isPriceChanged = false;
-  var timeInField = adForm.querySelector('#timein');
-  var timeOutField = adForm.querySelector('#timeout');
-  var roomsField = adForm.querySelector('#room_number');
-  var capacityField = adForm.querySelector('#capacity');
-  var resetButton = adForm.querySelector('.ad-form__reset');
-  var invalidClass = 'invalid_value';
-
 
   function disableForm() {
     if (!adForm.classList.contains('ad-form--disabled')) {

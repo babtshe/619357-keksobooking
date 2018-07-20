@@ -7,7 +7,29 @@
   var MAX_Y = 630;
   var FILTER_LOW = 10000;
   var FILTER_HIGH = 50000;
-
+  var pinsArray = [];
+  var filterForm = document.querySelector('.map__filters');
+  var filterBlocks = filterForm.querySelectorAll('fieldset, select');
+  var mapPinTemplate;
+  try {
+    mapPinTemplate = window.data.template.content.querySelector('.map__pin');
+  } catch (error) {
+    mapPinTemplate = window.data.template.querySelector('.map__pin');
+  }
+  var mapPinList = document.querySelector('.map__pins');
+  var pinOffsetX = Math.round(getPinSize().width / 2);
+  var pinOffsetY = Math.round(getPinSize().height);
+  var mapPinMain = document.querySelector('.map__pin--main');
+  var mapPinMainDefaultPos = mapPinMain.style.cssText;
+  var pinMainOffset = {
+    x: Math.floor(mapPinMain.offsetWidth / 2),
+    y: mapPinMain.offsetHeight + PIN_AFTER_OFFSET
+  };
+  var filterType = filterForm.querySelector('#housing-type');
+  var filterPrice = filterForm.querySelector('#housing-price');
+  var filterRooms = filterForm.querySelector('#housing-rooms');
+  var filterGuests = filterForm.querySelector('#housing-guests');
+  var filterCheckboxes = filterForm.querySelectorAll('input[type="checkbox"]');
   window.pin = {
     getAddress: function () {
       return (mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2)) + ', '
@@ -48,29 +70,6 @@
       }
     }
   };
-  var pinsArray = [];
-  var filterForm = document.querySelector('.map__filters');
-  var filterBlocks = filterForm.querySelectorAll('fieldset, select');
-  var mapPinTemplate;
-  try {
-    mapPinTemplate = window.data.template.content.querySelector('.map__pin');
-  } catch (error) {
-    mapPinTemplate = window.data.template.querySelector('.map__pin');
-  }
-  var mapPinList = document.querySelector('.map__pins');
-  var pinOffsetX = Math.round(getPinSize().width / 2);
-  var pinOffsetY = Math.round(getPinSize().height);
-  var mapPinMain = document.querySelector('.map__pin--main');
-  var mapPinMainDefaultPos = mapPinMain.style.cssText;
-  var pinMainOffset = {
-    x: Math.floor(mapPinMain.offsetWidth / 2),
-    y: mapPinMain.offsetHeight + PIN_AFTER_OFFSET
-  };
-  var filterType = filterForm.querySelector('#housing-type');
-  var filterPrice = filterForm.querySelector('#housing-price');
-  var filterRooms = filterForm.querySelector('#housing-rooms');
-  var filterGuests = filterForm.querySelector('#housing-guests');
-  var filterCheckboxes = filterForm.querySelectorAll('input[type="checkbox"]');
 
   mapPinMain.addEventListener('mousedown', onMapPinMainMouseDown);
   mapPinMain.addEventListener('keydown', onMainPinKeyDown);

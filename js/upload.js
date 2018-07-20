@@ -2,6 +2,15 @@
 
 (function () {
   var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+  var avatarUpload = document.querySelector('#avatar');
+  var avatarPreview = document.querySelector('.ad-form-header__preview');
+  var avatarDefaultSrc = avatarPreview.children[0].src;
+  var avatarDropzone = document.querySelector('.ad-form-header__drop-zone');
+  var photosUpload = document.querySelector('#images');
+  var photosPreview = document.querySelector('.ad-form__photo');
+  var photosDropzone = document.querySelector('.ad-form__drop-zone');
+  var dragErrorMessage = 'Перетаскивание не работает в этом браузере, кликните по полю загрузки.';
+  var uploadErrorMessage = 'Можно загружать только изображения!';
   window.upload = {
     enable: function () {
       createUploadListeners();
@@ -12,15 +21,6 @@
       photosPreview.innerHTML = '';
     }
   };
-  var avatarUpload = document.querySelector('#avatar');
-  var avatarPreview = document.querySelector('.ad-form-header__preview');
-  var avatarDefaultSrc = avatarPreview.children[0].src;
-  var avatarDropzone = document.querySelector('.ad-form-header__drop-zone');
-  var photosUpload = document.querySelector('#images');
-  var photosPreview = document.querySelector('.ad-form__photo');
-  var photosDropzone = document.querySelector('.ad-form__drop-zone');
-  var dragErrorMessage = 'Перетаскивание не работает в этом браузере, кликните по полю загрузки.';
-  var uploadErrorMessage = 'Можно загружать только изображения!';
 
   function createUploadListeners() {
     avatarUpload.addEventListener('change', onAvatarFileUpload);
