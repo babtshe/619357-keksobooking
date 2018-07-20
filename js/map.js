@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   window.map = {
     render: function () {
@@ -10,6 +11,7 @@
   };
 
   window.form.disable();
+  window.pin.disableFilter();
   if (!window.map.mapBlock.classList.contains('map--faded')) {
     window.map.mapBlock.classList.add('map--faded');
   }

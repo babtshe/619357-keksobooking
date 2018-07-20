@@ -1,6 +1,21 @@
 'use strict';
+
 (function () {
   var NO_GUESTS_ROOM = '100';
+  var isFormActive = false;
+  var adForm = document.querySelector('.ad-form');
+  var addressField = adForm.querySelector('#address');
+  var fieldsets = adForm.querySelectorAll('fieldset');
+  var buttons = adForm.querySelectorAll('button');
+  var typeField = adForm.querySelector('#type');
+  var priceField = adForm.querySelector('#price');
+  var isPriceChanged = false;
+  var timeInField = adForm.querySelector('#timein');
+  var timeOutField = adForm.querySelector('#timeout');
+  var roomsField = adForm.querySelector('#room_number');
+  var capacityField = adForm.querySelector('#capacity');
+  var resetButton = adForm.querySelector('.ad-form__reset');
+  var invalidClass = 'invalid_value';
   window.form = {
     activate: function () {
       activateForm();
@@ -18,23 +33,8 @@
       addressField.value = address;
     }
   };
-  var isFormActive = false;
-  var adForm = document.querySelector('.ad-form');
-  var addressField = adForm.querySelector('#address');
-  var fieldsets = adForm.querySelectorAll('fieldset');
-  var buttons = adForm.querySelectorAll('button');
-  var typeField = adForm.querySelector('#type');
-  var priceField = adForm.querySelector('#price');
-  var isPriceChanged = false;
-  var timeInField = adForm.querySelector('#timein');
-  var timeOutField = adForm.querySelector('#timeout');
-  var roomsField = adForm.querySelector('#room_number');
-  var capacityField = adForm.querySelector('#capacity');
-  var invalidClass = 'invalid_value';
-
 
   function disableForm() {
-    isFormActive = false;
     if (!adForm.classList.contains('ad-form--disabled')) {
       adForm.classList.add('ad-form--disabled');
     }
@@ -45,6 +45,7 @@
       buttons[j].disabled = true;
     }
     removeFormListeners();
+    isFormActive = false;
   }
 
   function activateForm() {
@@ -57,6 +58,7 @@
       buttons[j].disabled = false;
     }
     createFormListeners();
+    window.upload.enable();
   }
 
   function createFormListeners() {
@@ -66,6 +68,8 @@
     timeInField.addEventListener('change', onTimeInFieldChange);
     timeOutField.addEventListener('change', onTimeOutFieldChange);
     roomsField.addEventListener('change', onRoomsFieldChange);
+    resetButton.addEventListener('click', onResetButtonClick);
+    resetButton.addEventListener('keydown', onResetButtonKeydown);
   }
 
   function removeFormListeners() {
@@ -75,14 +79,14 @@
     timeInField.removeEventListener('change', onTimeInFieldChange);
     timeOutField.removeEventListener('change', onTimeOutFieldChange);
     roomsField.removeEventListener('change', onRoomsFieldChange);
+    resetButton.removeEventListener('click', onResetButtonClick);
+    resetButton.removeEventListener('keydown', onResetButtonKeydown);
   }
 
   function onTypeFieldChange() {
-    var currentType = typeField.value;
-    priceField.setAttribute('min', window.data.offerTypes[currentType].minPrice);
-    priceField.setAttribute('placeholder', window.data.offerTypes[currentType].minPrice);
+    updatePriceFieldLimits();
     if (!isPriceChanged) {
-      priceField.value = window.data.offerTypes[currentType].minPrice;
+      priceField.value = window.data.offerTypes[typeField.value].minPrice;
     } else {
       markFieldValidity(priceField);
     }
@@ -107,11 +111,35 @@
 
   function onFormSubmit(evt) {
     window.backend.save(new FormData(adForm), function () {
+      pageReset();
       window.modal.success();
-      adForm.reset();
-      window.form.setAddress(window.pin.getAddress());
     }, window.modal.error);
     evt.preventDefault();
+  }
+
+  function onResetButtonClick(evt) {
+    evt.preventDefault();
+    pageReset();
+  }
+
+  function onResetButtonKeydown(evt) {
+    if (evt.keyCode === window.data.ENTER_KEYCODE) {
+      pageReset();
+    }
+  }
+
+  function pageReset() {
+    window.card.clear();
+    adForm.reset();
+    updatePriceFieldLimits();
+    window.upload.reset();
+    window.pin.resetMain();
+    window.pin.update();
+  }
+
+  function updatePriceFieldLimits() {
+    priceField.setAttribute('min', window.data.offerTypes[typeField.value].minPrice);
+    priceField.setAttribute('placeholder', window.data.offerTypes[typeField.value].minPrice);
   }
 
   function markFieldValidity(field) {
@@ -146,5 +174,4 @@
       }
     }
   }
-
 })();

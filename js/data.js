@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   window.data = {
     ESC_KEYCODE: 27,
@@ -33,6 +34,7 @@
   function generateOffers() {
     window.backend.load(function (arr) {
       window.pin.render(arr);
+      window.pin.enableFilter();
     }, window.modal.error);
   }
 })();

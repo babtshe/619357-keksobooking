@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   var PIN_AFTER_OFFSET = 16;
   var MAX_PINS = 5;
@@ -6,7 +7,29 @@
   var MAX_Y = 630;
   var FILTER_LOW = 10000;
   var FILTER_HIGH = 50000;
-
+  var pinsArray = [];
+  var filterForm = document.querySelector('.map__filters');
+  var filterBlocks = filterForm.querySelectorAll('fieldset, select');
+  var mapPinTemplate;
+  try {
+    mapPinTemplate = window.data.template.content.querySelector('.map__pin');
+  } catch (error) {
+    mapPinTemplate = window.data.template.querySelector('.map__pin');
+  }
+  var mapPinList = document.querySelector('.map__pins');
+  var pinOffsetX = Math.round(getPinSize().width / 2);
+  var pinOffsetY = Math.round(getPinSize().height);
+  var mapPinMain = document.querySelector('.map__pin--main');
+  var mapPinMainDefaultPos = mapPinMain.style.cssText;
+  var pinMainOffset = {
+    x: Math.floor(mapPinMain.offsetWidth / 2),
+    y: mapPinMain.offsetHeight + PIN_AFTER_OFFSET
+  };
+  var filterType = filterForm.querySelector('#housing-type');
+  var filterPrice = filterForm.querySelector('#housing-price');
+  var filterRooms = filterForm.querySelector('#housing-rooms');
+  var filterGuests = filterForm.querySelector('#housing-guests');
+  var filterCheckboxes = filterForm.querySelectorAll('input[type="checkbox"]');
   window.pin = {
     getAddress: function () {
       return (mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2)) + ', '
@@ -18,34 +41,38 @@
       pinsArray = arr;
     },
 
-    updatePins: window.library.debounce(function () {
+    update: window.library.debounce(function () {
       renderPins(filterPins(pinsArray));
     }),
 
-    mapPinsList: document.querySelector('.map__pins')
+    deactivate: function () {
+      var activePin = document.querySelector('.map__pin--active');
+      if (activePin) {
+        activePin.classList.remove('map__pin--active');
+      }
+    },
+
+    resetMain: function () {
+      mapPinMain.style.cssText = mapPinMainDefaultPos;
+      window.form.setAddress(window.pin.getAddress());
+      filterForm.reset();
+    },
+
+    disableFilter: function () {
+      for (var i = 0; i < filterBlocks.length; i++) {
+        filterBlocks[i].disabled = true;
+      }
+    },
+
+    enableFilter: function () {
+      for (var i = 0; i < filterBlocks.length; i++) {
+        filterBlocks[i].disabled = false;
+      }
+    }
   };
-  var pinsArray = [];
-  var filterForm = document.querySelector('.map__filters');
-  var mapPinTemplate;
-  try {
-    mapPinTemplate = window.data.template.content.querySelector('.map__pin');
-  } catch (error) {
-    mapPinTemplate = window.data.template.querySelector('.map__pin');
-  }
-  var pinOffsetX = Math.round(getPinSize().width / 2);
-  var pinOffsetY = Math.round(getPinSize().height);
-  var mapPinMain = document.querySelector('.map__pin--main');
-  var pinMainOffset = {
-    x: Math.floor(mapPinMain.offsetWidth / 2),
-    y: mapPinMain.offsetHeight + PIN_AFTER_OFFSET
-  };
-  var filterType = filterForm.querySelector('#housing-type');
-  var filterPrice = filterForm.querySelector('#housing-price');
-  var filterRooms = filterForm.querySelector('#housing-rooms');
-  var filterGuests = filterForm.querySelector('#housing-guests');
-  var filterCheckboxes = filterForm.querySelectorAll('input[type="checkbox"]');
 
   mapPinMain.addEventListener('mousedown', onMapPinMainMouseDown);
+  mapPinMain.addEventListener('keydown', onMainPinKeyDown);
   getPinSize();
   filterForm.addEventListener('change', onFilterFormChange);
 
@@ -63,7 +90,7 @@
       fragment.appendChild(createPin(arr[i]));
     }
 
-    window.pin.mapPinsList.appendChild(fragment);
+    mapPinList.appendChild(fragment);
   }
 
   function createPin(item) {
@@ -75,6 +102,8 @@
     pinImg.alt = item.offer.title;
     pinBlock.addEventListener('click', function () {
       window.card.render(item);
+      window.pin.deactivate();
+      pinBlock.classList.add('map__pin--active');
     });
     return pinBlock;
   }
@@ -112,20 +141,32 @@
     function onMouseUp(evtUp) {
       evtUp.preventDefault();
       if (!evt.button) {
-        if (!window.form.isActive()) {
-          window.form.activate();
-          window.map.render();
-        }
-
-        window.form.setAddress(window.pin.getAddress());
+        initializeAll();
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
       }
     }
   }
 
+  function onMainPinKeyDown(evt) {
+    if (evt.keyCode === window.data.ENTER_KEYCODE) {
+      initializeAll();
+      mapPinMain.removeEventListener('keydown', onMainPinKeyDown);
+    }
+  }
+
+  function initializeAll() {
+    if (!window.form.isActive()) {
+      window.form.activate();
+      window.map.render();
+    }
+
+    window.form.setAddress(window.pin.getAddress());
+  }
+
   function onFilterFormChange() {
-    window.pin.updatePins();
+    window.card.clear();
+    window.pin.update();
   }
 
   function filterPins(arr) {
@@ -180,14 +221,13 @@
   function getPinSize() {
     var pin = mapPinTemplate.cloneNode(true);
     pin.style.visibility = 'hidden';
-    window.pin.mapPinsList.appendChild(pin);
+    mapPinList.appendChild(pin);
     var size = {
       width: pin.offsetWidth,
       height: pin.offsetHeight
     };
-    window.pin.mapPinsList.removeChild(pin);
+    mapPinList.removeChild(pin);
 
     return size;
   }
-
 })();

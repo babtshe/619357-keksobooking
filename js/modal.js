@@ -1,5 +1,10 @@
 'use strict';
+
 (function () {
+  var popup = document.querySelector('.popup-message');
+  var successBlock = document.querySelector('.success');
+  var errorText = popup.querySelector('.popup-message__text');
+  var popupClose = popup.querySelector('.popup-message__close');
   window.modal = {
     error: function (msg) {
       showPopup(msg);
@@ -9,10 +14,6 @@
       showSuccess();
     }
   };
-  var popup = document.querySelector('.popup-message');
-  var successBlock = document.querySelector('.success');
-  var errorText = popup.querySelector('.popup-message__text');
-  var popupClose = popup.querySelector('.popup-message__close');
 
   function showPopup(message) {
     createPopupListeners();
