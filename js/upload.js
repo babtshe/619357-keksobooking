@@ -5,39 +5,48 @@
   window.upload = {
     enable: function () {
       createUploadListeners();
+    },
+
+    reset: function () {
+      avatarPreview.children[0].src = avatarDefaultSrc;
+      photosPreview.innerHTML = '';
     }
   };
   var avatarUpload = document.querySelector('#avatar');
   var avatarPreview = document.querySelector('.ad-form-header__preview');
+  var avatarDefaultSrc = avatarPreview.children[0].src;
   var avatarDropzone = document.querySelector('.ad-form-header__drop-zone');
   var photosUpload = document.querySelector('#images');
   var photosPreview = document.querySelector('.ad-form__photo');
   var photosDropzone = document.querySelector('.ad-form__drop-zone');
   var dragErrorMessage = 'Перетаскивание не работает в этом браузере, кликните по полю загрузки.';
+  var uploadErrorMessage = 'Можно загружать только изображения!';
 
   function createUploadListeners() {
-    avatarUpload.addEventListener('change', onFileUpload);
+    avatarUpload.addEventListener('change', onAvatarFileUpload);
     avatarDropzone.addEventListener('dragover', onFileDragOver);
     avatarDropzone.addEventListener('dragleave', onFileDragLeave);
     avatarDropzone.addEventListener('drop', onAvatarDrop);
-    photosUpload.addEventListener('change', onFileUpload);
+    photosUpload.addEventListener('change', onPhotosFileUpload);
     photosDropzone.addEventListener('dragover', onFileDragOver);
     photosDropzone.addEventListener('dragleave', onFileDragLeave);
     photosDropzone.addEventListener('drop', onPhotosDrop);
   }
 
-  function onFileUpload(evt) {
+  function onAvatarFileUpload(evt) {
     if (checkFile(evt.target.value.toLowerCase())) {
-      switch (evt.target) {
-        case avatarUpload:
-          renderPreview(avatarUpload.files[0], avatarPreview);
-          break;
-        case photosUpload:
-          renderPreview(photosUpload.files[0], photosPreview);
-          break;
-      }
+      renderPreview(avatarUpload.files[0], avatarPreview);
     } else {
-      window.modal.error('Можно загружать только изображения!');
+      window.modal.error(uploadErrorMessage);
+      evt.target.value = null;
+    }
+  }
+
+  function onPhotosFileUpload(evt) {
+    if (checkFile(evt.target.value.toLowerCase())) {
+      renderPreview(photosUpload.files[0], photosPreview);
+    } else {
+      window.modal.error(uploadErrorMessage);
       evt.target.value = null;
     }
   }
@@ -52,7 +61,11 @@
   function onFileDragLeave(evt) {
     evt.stopPropagation();
     evt.preventDefault();
-    evt.target.classList.remove('dragged-over');
+    try { // firefox workaround
+      evt.target.classList.remove('dragged-over');
+    } catch (err) {
+      toString(err);
+    }
   }
 
   function onAvatarDrop(evt) {

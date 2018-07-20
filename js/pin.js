@@ -24,27 +24,44 @@
     }),
 
     deactivate: function () {
-      var currentPins = document.querySelectorAll('.map__pins .map__pin:not(.map__pin--main)');
-      if (currentPins) {
-        [].forEach.call(currentPins, function (elem) {
-          elem.classList.remove('map__pin--active');
-        });
+      var activePin = document.querySelector('.map__pin--active');
+      if (activePin) {
+        activePin.classList.remove('map__pin--active');
       }
     },
 
-    mapPinsList: document.querySelector('.map__pins')
+    resetMain: function () {
+      mapPinMain.style.cssText = mapPinMainDefaultPos;
+      window.form.setAddress(window.pin.getAddress());
+      filterForm.reset();
+    },
+
+    disableFilter: function () {
+      for (var i = 0; i < filterBlocks.length; i++) {
+        filterBlocks[i].disabled = true;
+      }
+    },
+
+    enableFilter: function () {
+      for (var i = 0; i < filterBlocks.length; i++) {
+        filterBlocks[i].disabled = false;
+      }
+    }
   };
   var pinsArray = [];
   var filterForm = document.querySelector('.map__filters');
+  var filterBlocks = filterForm.querySelectorAll('fieldset, select');
   var mapPinTemplate;
   try {
     mapPinTemplate = window.data.template.content.querySelector('.map__pin');
   } catch (error) {
     mapPinTemplate = window.data.template.querySelector('.map__pin');
   }
+  var mapPinList = document.querySelector('.map__pins');
   var pinOffsetX = Math.round(getPinSize().width / 2);
   var pinOffsetY = Math.round(getPinSize().height);
   var mapPinMain = document.querySelector('.map__pin--main');
+  var mapPinMainDefaultPos = mapPinMain.style.cssText;
   var pinMainOffset = {
     x: Math.floor(mapPinMain.offsetWidth / 2),
     y: mapPinMain.offsetHeight + PIN_AFTER_OFFSET
@@ -73,7 +90,7 @@
       fragment.appendChild(createPin(arr[i]));
     }
 
-    window.pin.mapPinsList.appendChild(fragment);
+    mapPinList.appendChild(fragment);
   }
 
   function createPin(item) {
@@ -193,12 +210,12 @@
   function getPinSize() {
     var pin = mapPinTemplate.cloneNode(true);
     pin.style.visibility = 'hidden';
-    window.pin.mapPinsList.appendChild(pin);
+    mapPinList.appendChild(pin);
     var size = {
       width: pin.offsetWidth,
       height: pin.offsetHeight
     };
-    window.pin.mapPinsList.removeChild(pin);
+    mapPinList.removeChild(pin);
 
     return size;
   }
