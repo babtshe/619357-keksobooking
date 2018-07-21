@@ -17,14 +17,12 @@
 
     checkClassInArray: function (classList, arr, prefix) {
       var result = false;
-      for (var i = 0; i < classList.length; i++) {
-        if (classList[i].indexOf(prefix) >= 0) {
-          var currentClass = classList[i].replace(prefix, '');
-          if (arr.indexOf(currentClass) >= 0) {
-            result = true;
-          }
+      [].forEach.call(classList, function (item) {
+        if (item.indexOf(prefix) >= 0) {
+          var currentClass = item.replace(prefix, '');
+          result = (arr.indexOf(currentClass) >= 0);
         }
-      }
+      });
       return result;
     },
 

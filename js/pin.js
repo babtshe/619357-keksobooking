@@ -59,15 +59,15 @@
     },
 
     disableFilter: function () {
-      for (var i = 0; i < filterBlocks.length; i++) {
-        filterBlocks[i].disabled = true;
-      }
+      [].forEach.call(filterBlocks, function (item) {
+        item.disabled = true;
+      });
     },
 
     enableFilter: function () {
-      for (var i = 0; i < filterBlocks.length; i++) {
-        filterBlocks[i].disabled = false;
-      }
+      [].forEach.call(filterBlocks, function (item) {
+        item.disabled = false;
+      });
     }
   };
 

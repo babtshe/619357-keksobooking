@@ -66,22 +66,22 @@
   }
 
   function createFeatures(listBlock, featuresArray) {
-    for (var i = 0; i < listBlock.children.length; i++) {
-      if (!window.library.checkClassInArray(listBlock.children[i].classList, featuresArray, FEATURE_PREFIX)) {
-        listBlock.removeChild(listBlock.children[i]);
-        i--;
+    [].forEach.call(listBlock.children, function (item) {
+      if (!window.library.checkClassInArray(item.classList, featuresArray, FEATURE_PREFIX)) {
+        item.remove();
       }
-    }
+    });
   }
 
   function createPhotos(photosBlock, photosArray) {
     var fragment = document.createDocumentFragment();
+    var popupPhoto = photosBlock.querySelector('.popup__photo');
 
-    for (var i = 0; i < photosArray.length; i++) {
-      var photo = photosBlock.querySelector('.popup__photo').cloneNode(true);
-      photo.src = photosArray[i];
+    photosArray.forEach(function (item) {
+      var photo = popupPhoto.cloneNode(true);
+      photo.src = item;
       fragment.appendChild(photo);
-    }
+    });
 
     photosBlock.innerHTML = '';
     photosBlock.appendChild(fragment);

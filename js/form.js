@@ -5,8 +5,7 @@
   var isFormActive = false;
   var adForm = document.querySelector('.ad-form');
   var addressField = adForm.querySelector('#address');
-  var fieldsets = adForm.querySelectorAll('fieldset');
-  var buttons = adForm.querySelectorAll('button');
+  var disabableBlocks = adForm.querySelectorAll('fieldset, button');
   var typeField = adForm.querySelector('#type');
   var priceField = adForm.querySelector('#price');
   var isPriceChanged = false;
@@ -38,12 +37,9 @@
     if (!adForm.classList.contains('ad-form--disabled')) {
       adForm.classList.add('ad-form--disabled');
     }
-    for (var i = 0; i < fieldsets.length; i++) {
-      fieldsets[i].disabled = true;
-    }
-    for (var j = 0; j < buttons.length; j++) {
-      buttons[j].disabled = true;
-    }
+    [].forEach.call(disabableBlocks, function (item) {
+      item.disabled = true;
+    });
     removeFormListeners();
     isFormActive = false;
   }
@@ -51,12 +47,9 @@
   function activateForm() {
     isFormActive = true;
     adForm.classList.remove('ad-form--disabled');
-    for (var i = 0; i < fieldsets.length; i++) {
-      fieldsets[i].disabled = false;
-    }
-    for (var j = 0; j < buttons.length; j++) {
-      buttons[j].disabled = false;
-    }
+    [].forEach.call(disabableBlocks, function (item) {
+      item.disabled = false;
+    });
     createFormListeners();
     window.upload.enable();
   }
