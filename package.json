@@ -5,7 +5,7 @@
   "description": "Личный проект «Кексобукинг» от HTML Academy",
   "repository": {
     "type": "git",
-    "url": "git@github.com:htmlacademy-javascript/619357-keksobooking.git"
+    "url": "git@github.com:htmlacademy-javascript/keksobooking.git"
   },
   "bugs": {
     "url": "https://github.com/htmlacademy-javascript/619357-keksobooking/issues"
@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {},
   "scripts": {
-    "test": "eslint js/"
+    "test": "eslint source/js/"
   },
   "engines": {
     "node": "8.11"
